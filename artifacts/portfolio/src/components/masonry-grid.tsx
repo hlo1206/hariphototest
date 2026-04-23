@@ -8,6 +8,16 @@ interface MasonryGridProps {
 }
 
 export function MasonryGrid({ photos, onPhotoClick }: MasonryGridProps) {
+  if (photos.length === 0) {
+    return (
+      <div className="border border-dashed border-border py-24 px-6 text-center">
+        <p className="font-serif text-2xl text-foreground mb-3">New work coming soon</p>
+        <p className="text-muted-foreground font-light max-w-md mx-auto">
+          This collection is being curated. Please check back shortly, or reach out for a private viewing.
+        </p>
+      </div>
+    );
+  }
   // Simple CSS columns masonry
   return (
     <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
