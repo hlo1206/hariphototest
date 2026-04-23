@@ -78,7 +78,7 @@ export function Layout({ children }: { children: ReactNode }) {
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 20 }}
+              transition={{ type: "tween", duration: 0.25, ease: "easeOut" }}
               className="fixed inset-y-0 right-0 z-50 w-[80%] max-w-sm bg-background border-l border-border p-6 shadow-2xl flex flex-col"
             >
               <div className="flex justify-end mb-12">
