@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
-import { Photo } from "@/lib/data";
+import { Photo } from "@/lib/types";
 
 interface MasonryGridProps {
   photos: Photo[];

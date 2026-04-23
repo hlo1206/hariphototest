@@ -1,7 +1,7 @@
 import { useEffect, useCallback, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut } from "lucide-react";
-import { Photo } from "@/lib/data";
+import { Photo } from "@/lib/types";
 
 interface LightboxProps {
   photos: Photo[];

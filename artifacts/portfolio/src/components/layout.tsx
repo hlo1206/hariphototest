@@ -1,49 +1,8 @@
-import { ReactNode } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Menu, X, Instagram, Phone, ChevronDown } from "lucide-react";
-import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
-type SubItem = { label: string; filter: string };
-
-type NavLink = {
-  href: string;
-  label: string;
-  items?: SubItem[];
-};
-
-const navLinks: NavLink[] = [
-  { href: "/portraits", label: "Portraits" },
-  {
-    href: "/street",
-    label: "Street Photography",
-    items: [
-      { label: "Pune", filter: "Pune" },
-      { label: "Talegaon", filter: "Talegaon" },
-      { label: "Vadgaon", filter: "Vadgaon" },
-    ],
-  },
-  {
-    href: "/cultural",
-    label: "Cultural Events",
-    items: [
-      { label: "Ganpati", filter: "Ganpati" },
-      { label: "Gudi Padwa", filter: "Gudi Padwa" },
-      { label: "Diwali", filter: "Diwali" },
-    ],
-  },
-  {
-    href: "/events",
-    label: "Events",
-    items: [
-      { label: "Live Dance Show", filter: "Live Dance Show" },
-      { label: "Wrestling", filter: "Wrestling" },
-    ],
-  },
-  { href: "/landscapes", label: "Landscapes" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-];
+import { useCategories, useSubcategories } from "@/lib/queries";
 
 export function Layout({ children }: { children: ReactNode }) {
   const [location] = useLocation();
@@ -51,13 +10,27 @@ export function Layout({ children }: { children: ReactNode }) {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
 
+  const { data: categories = [] } = useCategories();
+  const { data: subcategories = [] } = useSubcategories();
+
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [location]);
 
+  const navLinks = [
+    ...categories.map((c) => ({
+      href: `/c/${c.slug}`,
+      label: c.name,
+      items: subcategories
+        .filter((s) => s.category_id === c.id)
+        .map((s) => ({ label: s.name, filter: s.name })),
+    })),
+    { href: "/about", label: "About", items: [] as { label: string; filter: string }[] },
+    { href: "/contact", label: "Contact", items: [] as { label: string; filter: string }[] },
+  ];
+
   return (
     <div className="min-h-[100dvh] flex flex-col bg-background text-foreground font-sans selection:bg-primary/20 selection:text-primary">
-      {/* Navbar */}
       <header className="sticky top-0 z-40 w-full bg-background/90 backdrop-blur-md border-b border-transparent transition-colors duration-300">
         <div className="max-w-screen-2xl mx-auto px-6 md:px-12 h-24 flex items-center justify-between">
           <Link href="/" className="group">
@@ -67,10 +40,10 @@ export function Layout({ children }: { children: ReactNode }) {
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-7">
+          <nav className="hidden lg:flex items-center gap-7">
             {navLinks.map((link) => {
               const isActive = location.startsWith(link.href);
-              const hasItems = !!link.items?.length;
+              const hasItems = link.items.length > 0;
               return (
                 <div
                   key={link.href}
@@ -99,7 +72,7 @@ export function Layout({ children }: { children: ReactNode }) {
                           className="absolute left-1/2 -translate-x-1/2 top-full pt-3"
                         >
                           <div className="bg-background border border-border shadow-xl py-3 min-w-[200px] flex flex-col">
-                            {link.items!.map((item) => (
+                            {link.items.map((item) => (
                               <Link
                                 key={item.filter}
                                 href={`${link.href}#${encodeURIComponent(item.filter)}`}
@@ -118,9 +91,8 @@ export function Layout({ children }: { children: ReactNode }) {
             })}
           </nav>
 
-          {/* Mobile Menu Toggle */}
           <button
-            className="md:hidden p-2 -mr-2 text-foreground"
+            className="lg:hidden p-2 -mr-2 text-foreground"
             onClick={() => setIsMobileMenuOpen(true)}
             aria-label="Open menu"
           >
@@ -158,7 +130,7 @@ export function Layout({ children }: { children: ReactNode }) {
               </div>
               <nav className="flex flex-col gap-3">
                 {navLinks.map((link) => {
-                  const hasItems = !!link.items?.length;
+                  const hasItems = link.items.length > 0;
                   const expanded = mobileExpanded === link.href;
                   return (
                     <div key={link.href} className="border-b border-border/60 pb-3">
@@ -195,7 +167,7 @@ export function Layout({ children }: { children: ReactNode }) {
                             className="overflow-hidden"
                           >
                             <div className="flex flex-col gap-2 pt-4 pl-3 border-l border-border/60">
-                              {link.items!.map((item) => (
+                              {link.items.map((item) => (
                                 <Link
                                   key={item.filter}
                                   href={`${link.href}#${encodeURIComponent(item.filter)}`}
@@ -217,12 +189,8 @@ export function Layout({ children }: { children: ReactNode }) {
         )}
       </AnimatePresence>
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col w-full">
-        {children}
-      </main>
+      <main className="flex-1 flex flex-col w-full">{children}</main>
 
-      {/* Footer */}
       <footer className="w-full bg-background border-t border-border mt-auto">
         <div className="max-w-screen-2xl mx-auto px-6 md:px-12 py-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">

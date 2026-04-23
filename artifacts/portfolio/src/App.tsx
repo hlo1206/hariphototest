@@ -6,13 +6,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 
 import Home from "@/pages/home";
-import Portraits from "@/pages/portraits";
-import Street from "@/pages/street";
-import Cultural from "@/pages/cultural";
-import Events from "@/pages/events";
-import Landscapes from "@/pages/landscapes";
+import CategoryPage from "@/pages/category";
 import About from "@/pages/about";
 import Contact from "@/pages/contact";
+import Admin from "@/pages/admin";
 
 const queryClient = new QueryClient();
 
@@ -28,13 +25,10 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
-      <Route path="/portraits" component={Portraits} />
-      <Route path="/street" component={Street} />
-      <Route path="/cultural" component={Cultural} />
-      <Route path="/events" component={Events} />
-      <Route path="/landscapes" component={Landscapes} />
+      <Route path="/c/:slug" component={CategoryPage} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
+      <Route path="/admin" component={Admin} />
       <Route component={NotFound} />
     </Switch>
   );
