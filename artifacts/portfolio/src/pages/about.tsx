@@ -1,5 +1,6 @@
 import { Layout } from "@/components/layout";
 import { motion } from "framer-motion";
+import hariPhoto from "@assets/IMG-20260423-WA0005_1776950452874.jpg";
 
 export default function About() {
   return (
@@ -14,7 +15,7 @@ export default function About() {
         >
           <div className="aspect-[3/4] bg-muted relative overflow-hidden">
             <img 
-              src="/images/cultural-stock_1.jpg" // Using placeholder as we don't have a personal photo
+              src={hariPhoto}
               alt="Hariharakrishnan Sriram"
               className="w-full h-full object-cover"
             />
