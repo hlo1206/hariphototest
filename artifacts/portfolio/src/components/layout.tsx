@@ -4,19 +4,16 @@ import { Menu, X, Instagram, Phone, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-type SubGroup = {
-  href: string;
-  label: string;
-  items: { label: string; filter: string }[];
-};
+type SubItem = { label: string; filter: string };
 
 type NavLink = {
   href: string;
   label: string;
-  groups?: SubGroup[];
+  items?: SubItem[];
 };
 
-const portraitGroups: SubGroup[] = [
+const navLinks: NavLink[] = [
+  { href: "/portraits", label: "Portraits" },
   {
     href: "/street",
     label: "Street Photography",
@@ -43,10 +40,6 @@ const portraitGroups: SubGroup[] = [
       { label: "Wrestling", filter: "Wrestling" },
     ],
   },
-];
-
-const navLinks: NavLink[] = [
-  { href: "/portraits", label: "Portraits", groups: portraitGroups },
   { href: "/landscapes", label: "Landscapes" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
@@ -74,16 +67,16 @@ export function Layout({ children }: { children: ReactNode }) {
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-7">
             {navLinks.map((link) => {
               const isActive = location.startsWith(link.href);
-              const hasGroups = !!link.groups?.length;
+              const hasItems = !!link.items?.length;
               return (
                 <div
                   key={link.href}
                   className="relative"
-                  onMouseEnter={() => hasGroups && setOpenDropdown(link.href)}
-                  onMouseLeave={() => hasGroups && setOpenDropdown(null)}
+                  onMouseEnter={() => hasItems && setOpenDropdown(link.href)}
+                  onMouseLeave={() => hasItems && setOpenDropdown(null)}
                 >
                   <Link
                     href={link.href}
@@ -92,10 +85,10 @@ export function Layout({ children }: { children: ReactNode }) {
                     }`}
                   >
                     {link.label}
-                    {hasGroups && <ChevronDown className="w-3 h-3 opacity-60" />}
+                    {hasItems && <ChevronDown className="w-3 h-3 opacity-60" />}
                   </Link>
 
-                  {hasGroups && (
+                  {hasItems && (
                     <AnimatePresence>
                       {openDropdown === link.href && (
                         <motion.div
@@ -105,25 +98,15 @@ export function Layout({ children }: { children: ReactNode }) {
                           transition={{ duration: 0.15 }}
                           className="absolute left-1/2 -translate-x-1/2 top-full pt-3"
                         >
-                          <div className="bg-background border border-border shadow-xl px-8 py-6 grid grid-cols-3 gap-10 min-w-[640px]">
-                            {link.groups!.map((group) => (
-                              <div key={group.href} className="flex flex-col gap-3">
-                                <Link
-                                  href={group.href}
-                                  className="font-serif text-base text-foreground hover:text-primary transition-colors pb-2 border-b border-border/60"
-                                >
-                                  {group.label}
-                                </Link>
-                                {group.items.map((item) => (
-                                  <Link
-                                    key={item.filter}
-                                    href={`${group.href}#${encodeURIComponent(item.filter)}`}
-                                    className="text-sm font-light text-muted-foreground hover:text-primary transition-colors"
-                                  >
-                                    {item.label}
-                                  </Link>
-                                ))}
-                              </div>
+                          <div className="bg-background border border-border shadow-xl py-3 min-w-[200px] flex flex-col">
+                            {link.items!.map((item) => (
+                              <Link
+                                key={item.filter}
+                                href={`${link.href}#${encodeURIComponent(item.filter)}`}
+                                className="px-5 py-2 text-sm font-light text-muted-foreground hover:text-primary hover:bg-secondary/40 transition-colors"
+                              >
+                                {item.label}
+                              </Link>
                             ))}
                           </div>
                         </motion.div>
@@ -175,18 +158,18 @@ export function Layout({ children }: { children: ReactNode }) {
               </div>
               <nav className="flex flex-col gap-3">
                 {navLinks.map((link) => {
-                  const hasGroups = !!link.groups?.length;
+                  const hasItems = !!link.items?.length;
                   const expanded = mobileExpanded === link.href;
                   return (
                     <div key={link.href} className="border-b border-border/60 pb-3">
                       <div className="flex items-center justify-between">
                         <Link
                           href={link.href}
-                          className="font-serif text-3xl tracking-tight text-foreground hover:text-primary transition-colors"
+                          className="font-serif text-2xl tracking-tight text-foreground hover:text-primary transition-colors"
                         >
                           {link.label}
                         </Link>
-                        {hasGroups && (
+                        {hasItems && (
                           <button
                             onClick={() =>
                               setMobileExpanded(expanded ? null : link.href)
@@ -203,7 +186,7 @@ export function Layout({ children }: { children: ReactNode }) {
                         )}
                       </div>
                       <AnimatePresence>
-                        {hasGroups && expanded && (
+                        {hasItems && expanded && (
                           <motion.div
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
@@ -211,27 +194,15 @@ export function Layout({ children }: { children: ReactNode }) {
                             transition={{ duration: 0.2 }}
                             className="overflow-hidden"
                           >
-                            <div className="flex flex-col gap-5 pt-4 pl-2">
-                              {link.groups!.map((group) => (
-                                <div key={group.href} className="flex flex-col gap-2">
-                                  <Link
-                                    href={group.href}
-                                    className="font-serif text-lg text-foreground hover:text-primary transition-colors"
-                                  >
-                                    {group.label}
-                                  </Link>
-                                  <div className="flex flex-col gap-1.5 pl-3 border-l border-border/60">
-                                    {group.items.map((item) => (
-                                      <Link
-                                        key={item.filter}
-                                        href={`${group.href}#${encodeURIComponent(item.filter)}`}
-                                        className="font-light text-sm text-muted-foreground hover:text-primary transition-colors"
-                                      >
-                                        {item.label}
-                                      </Link>
-                                    ))}
-                                  </div>
-                                </div>
+                            <div className="flex flex-col gap-2 pt-4 pl-3 border-l border-border/60">
+                              {link.items!.map((item) => (
+                                <Link
+                                  key={item.filter}
+                                  href={`${link.href}#${encodeURIComponent(item.filter)}`}
+                                  className="font-light text-base text-muted-foreground hover:text-primary transition-colors"
+                                >
+                                  {item.label}
+                                </Link>
                               ))}
                             </div>
                           </motion.div>
