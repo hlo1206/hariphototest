@@ -19,6 +19,8 @@ export function Lightbox({ photos, currentIndex, isOpen, onClose, onNavigate }: 
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const dragState = useRef<{ x: number; y: number; ox: number; oy: number } | null>(null);
+  const pointersRef = useRef<Map<number, { x: number; y: number }>>(new Map());
+  const pinchStartRef = useRef<{ dist: number; zoom: number } | null>(null);
 
   const resetZoom = useCallback(() => {
     setZoom(1);
@@ -73,21 +75,47 @@ export function Lightbox({ photos, currentIndex, isOpen, onClose, onNavigate }: 
   };
 
   const handlePointerDown = (e: React.PointerEvent) => {
-    if (zoom <= 1) return;
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    dragState.current = { x: e.clientX, y: e.clientY, ox: offset.x, oy: offset.y };
+    pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (pointersRef.current.size === 2) {
+      const pts = Array.from(pointersRef.current.values());
+      const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      pinchStartRef.current = { dist, zoom };
+      dragState.current = null;
+    } else if (pointersRef.current.size === 1 && zoom > 1) {
+      dragState.current = { x: e.clientX, y: e.clientY, ox: offset.x, oy: offset.y };
+    }
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    if (!dragState.current) return;
-    setOffset({
-      x: dragState.current.ox + (e.clientX - dragState.current.x),
-      y: dragState.current.oy + (e.clientY - dragState.current.y),
-    });
+    if (!pointersRef.current.has(e.pointerId)) return;
+    pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (pointersRef.current.size === 2 && pinchStartRef.current) {
+      const pts = Array.from(pointersRef.current.values());
+      const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      const ratio = dist / pinchStartRef.current.dist;
+      const next = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, pinchStartRef.current.zoom * ratio));
+      setZoom(next);
+      return;
+    }
+
+    if (dragState.current && pointersRef.current.size === 1) {
+      setOffset({
+        x: dragState.current.ox + (e.clientX - dragState.current.x),
+        y: dragState.current.oy + (e.clientY - dragState.current.y),
+      });
+    }
   };
 
-  const handlePointerUp = () => {
-    dragState.current = null;
+  const handlePointerUp = (e: React.PointerEvent) => {
+    pointersRef.current.delete(e.pointerId);
+    if (pointersRef.current.size < 2) pinchStartRef.current = null;
+    if (pointersRef.current.size === 0) dragState.current = null;
+    if (pointersRef.current.size === 1 && zoom > 1) {
+      const remaining = Array.from(pointersRef.current.values())[0];
+      dragState.current = { x: remaining.x, y: remaining.y, ox: offset.x, oy: offset.y };
+    }
   };
 
   return (
@@ -155,6 +183,12 @@ export function Lightbox({ photos, currentIndex, isOpen, onClose, onNavigate }: 
           <div
             className="relative w-full h-full flex flex-col items-center justify-center p-4 md:p-12 overflow-hidden"
             onWheel={handleWheel}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
+            onDoubleClick={handleDoubleClick}
+            style={{ touchAction: "none" }}
           >
             <motion.div
               key={currentIndex}
@@ -162,21 +196,15 @@ export function Lightbox({ photos, currentIndex, isOpen, onClose, onNavigate }: 
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
-              className="relative max-w-full max-h-full flex items-center justify-center select-none"
-              onClick={(e) => e.stopPropagation()}
+              className="relative max-w-full max-h-full flex items-center justify-center select-none pointer-events-none"
             >
               <img
                 src={currentPhoto.src}
                 alt={currentPhoto.title}
                 draggable={false}
-                onDoubleClick={handleDoubleClick}
-                onPointerDown={handlePointerDown}
-                onPointerMove={handlePointerMove}
-                onPointerUp={handlePointerUp}
-                onPointerCancel={handlePointerUp}
                 style={{
                   transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
-                  transition: dragState.current ? "none" : "transform 0.2s ease-out",
+                  transition: dragState.current || pinchStartRef.current ? "none" : "transform 0.2s ease-out",
                   cursor: zoom > 1 ? (dragState.current ? "grabbing" : "grab") : "zoom-in",
                   willChange: "transform",
                 }}
