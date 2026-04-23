@@ -4,11 +4,12 @@ import { MasonryGrid } from "@/components/masonry-grid";
 import { Lightbox } from "@/components/lightbox";
 import { categories, Photo } from "@/lib/data";
 import { motion } from "framer-motion";
+import { useHashFilter } from "@/hooks/use-hash-filter";
 
 const subCategories = ["All", "Pune", "Talegaon", "Vadgaon"];
 
 export default function Street() {
-  const [activeFilter, setActiveFilter] = useState("All");
+  const [activeFilter, setActiveFilter] = useHashFilter(subCategories);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
