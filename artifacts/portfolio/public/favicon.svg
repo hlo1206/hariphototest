@@ -1,6 +1,0 @@
-<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="180" height="180" fill="#f5f3ef"/>
-  <!-- Minimal aperture / FH mark -->
-  <path d="M90 30L141.962 60V120L90 150L38.0385 120V60L90 30Z" stroke="#d96c20" stroke-width="4"/>
-  <circle cx="90" cy="90" r="24" stroke="#d96c20" stroke-width="4"/>
-</svg>
