@@ -1,0 +1,97 @@
+uploads = []
+
+[[generated]]
+id = "cOr5TFAHGnNY51QzMFt6h"
+uri = "file://artifacts/portfolio/src/assets/portraits-1.png"
+type = "image"
+title = "street portrait old man"
+
+[[generated]]
+id = "G_9Cw_wncyp3Exluex6cH"
+uri = "file://artifacts/portfolio/src/assets/street-1.png"
+type = "image"
+title = "pune street market"
+
+[[generated]]
+id = "7dgkrURM6Cx15sXTEPznS"
+uri = "file://artifacts/portfolio/src/assets/cultural-1.png"
+type = "image"
+title = "ganpati festival drum"
+
+[[generated]]
+id = "WkZSK2y_6RJ5kM1P97p0a"
+uri = "file://artifacts/portfolio/src/assets/events-1.png"
+type = "image"
+title = "kushti wrestling akhada"
+
+[[generated]]
+id = "eLIz2RWWF6T4j-osh5Xdp"
+uri = "file://artifacts/portfolio/src/assets/landscapes-1.png"
+type = "image"
+title = "maharashtra landscape sunrise"
+
+[[generated]]
+id = "n2Oh2ByzkNuIdc3lnKmuY"
+uri = "file://artifacts/portfolio/src/assets/portraits-2.png"
+type = "image"
+title = "portrait young woman window light"
+
+[[generated]]
+id = "KIbg-LK_LFD5qe1NvuGYg"
+uri = "file://artifacts/portfolio/src/assets/portraits-3.png"
+type = "image"
+title = "black and white portrait artisan"
+
+[[generated]]
+id = "sh-tE1zKjRIov_7-sz81W"
+uri = "file://artifacts/portfolio/src/assets/portraits-4.png"
+type = "image"
+title = "portrait child laughing"
+
+[[generated]]
+id = "mGE0iAbSvCTrKI2-gXT5H"
+uri = "file://artifacts/portfolio/src/assets/portraits-5.png"
+type = "image"
+title = "portrait old couple"
+
+[[generated]]
+id = "bbktMm7AgoHuetL2S5qJU"
+uri = "file://artifacts/portfolio/src/assets/street-2.png"
+type = "image"
+title = "street photography rainy day"
+
+[[outputs]]
+id = "3ZcIIiRTDyYVCZh0FJetu"
+uri = "file://artifacts/portfolio/public/images/cultural-stock_1.jpg"
+type = "image"
+title = "Traditional Indian festival, Ganpati procession, crowds, warm light"
+
+[[outputs]]
+id = "v05_c22uEiMlxFvd7D6gW"
+uri = "file://artifacts/portfolio/public/images/cultural-stock_2.jpg"
+type = "image"
+title = "Traditional Indian festival, Ganpati procession, crowds, warm light"
+
+[[outputs]]
+id = "8pv-VysHIPLqV3c0vsSXK"
+uri = "file://artifacts/portfolio/public/images/events-stock_1.jpg"
+type = "image"
+title = "Indian traditional wrestling match mud akhada"
+
+[[outputs]]
+id = "hEk1l6AX9PR2-li233zF8"
+uri = "file://artifacts/portfolio/public/images/events-stock_2.jpg"
+type = "image"
+title = "Indian traditional wrestling match mud akhada"
+
+[[outputs]]
+id = "x19zsnhYwP2OYDIQNewBA"
+uri = "file://artifacts/portfolio/public/images/landscapes-stock_1.jpg"
+type = "image"
+title = "Serene misty mountains western ghats landscape maharashtra"
+
+[[outputs]]
+id = "sivtAoMzKu5ndLTxa538C"
+uri = "file://artifacts/portfolio/public/images/landscapes-stock_2.jpg"
+type = "image"
+title = "Serene misty mountains western ghats landscape maharashtra"
