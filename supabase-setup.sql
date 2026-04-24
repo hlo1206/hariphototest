@@ -177,3 +177,8 @@ insert into public.subcategories (category_id, name, sort_order)
   join (values ('Live Dance Show', 1), ('Wrestling', 2)) as v(name, sort_order) on true
   where c.slug = 'events'
 on conflict (category_id, name) do nothing;
+
+-- ---------------------------------------------------------------------------
+-- 7. Tell PostgREST to reload its schema cache so new RPCs are visible
+-- ---------------------------------------------------------------------------
+notify pgrst, 'reload schema';
