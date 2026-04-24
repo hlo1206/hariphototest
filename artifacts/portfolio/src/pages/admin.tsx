@@ -5,10 +5,9 @@ import { supabase, PHOTO_BUCKET } from "@/lib/supabase";
 import { useCategories, useSubcategories, usePhotos } from "@/lib/queries";
 import { useQueryClient } from "@tanstack/react-query";
 import { Trash2, Star, StarOff, Plus, LogOut, Upload } from "lucide-react";
-import type { Session } from "@supabase/supabase-js";
 import type { AspectRatio } from "@/lib/types";
 
-const ADMIN_EMAIL = "hariom@frames.local";
+const SESSION_KEY = "frames_admin_session";
 
 function LoginForm({ onLoggedIn }: { onLoggedIn: () => void }) {
   const [username, setUsername] = useState("hariom");
@@ -20,14 +19,20 @@ function LoginForm({ onLoggedIn }: { onLoggedIn: () => void }) {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const email =
-      username.includes("@") ? username : `${username}@frames.local`;
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error: rpcErr } = await supabase.rpc("verify_admin", {
+      p_username: username.trim(),
+      p_password: password,
+    });
     setLoading(false);
-    if (error) {
-      setError(error.message);
+    if (rpcErr) {
+      setError(rpcErr.message);
       return;
     }
+    if (data !== true) {
+      setError("Invalid username or password.");
+      return;
+    }
+    localStorage.setItem(SESSION_KEY, username.trim());
     onLoggedIn();
   };
 
@@ -471,22 +476,17 @@ function Dashboard({ onSignOut }: { onSignOut: () => void }) {
 }
 
 export default function Admin() {
-  const [session, setSession] = useState<Session | null>(null);
+  const [loggedIn, setLoggedIn] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setLoaded(true);
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) =>
-      setSession(s),
-    );
-    return () => sub.subscription.unsubscribe();
+    setLoggedIn(!!localStorage.getItem(SESSION_KEY));
+    setLoaded(true);
   }, []);
 
-  const signOut = async () => {
-    await supabase.auth.signOut();
+  const signOut = () => {
+    localStorage.removeItem(SESSION_KEY);
+    setLoggedIn(false);
   };
 
   if (!loaded) {
@@ -501,14 +501,11 @@ export default function Admin() {
 
   return (
     <Layout>
-      {session ? (
+      {loggedIn ? (
         <Dashboard onSignOut={signOut} />
       ) : (
-        <LoginForm onLoggedIn={() => {}} />
+        <LoginForm onLoggedIn={() => setLoggedIn(true)} />
       )}
     </Layout>
   );
 }
-
-// Hint to satisfy linter — exported only so admin email constant can be referenced if needed elsewhere
-export { ADMIN_EMAIL };
